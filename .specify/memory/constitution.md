@@ -1,50 +1,154 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+Version: 0.0.0 → 1.0.0 (initial ratification)
+Modified Principles: N/A (initial creation)
+Added Sections: All core principles and governance structure
+Removed Sections: N/A
+Templates Status:
+  ✅ .specify/templates/plan-template.md - Reviewed, compatible with new constitution
+  ✅ .specify/templates/spec-template.md - Reviewed, aligns with testability and MVP principles
+  ✅ .specify/templates/tasks-template.md - Reviewed, supports independent testing approach
+Follow-up TODOs: None
+-->
 
-## Core Principles
+# AI-News 專案規範
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+## 核心原則
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### I. 高品質優先
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**原則**: 所有程式碼必須達到生產環境品質標準，不容妥協。
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+**規則**:
+- 程式碼必須清晰易讀，具有適當的變數命名和結構
+- 必須遵循該程式語言的最佳實踐和慣例
+- 必須包含適當的錯誤處理和邊界條件檢查
+- 必須進行程式碼審查才能合併至主分支
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+**理由**: 高品質的程式碼減少技術債，提高可維護性，降低長期維護成本。
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### II. 可測試性（不可協商）
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+**原則**: 所有功能必須可被獨立測試和驗證。
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+**規則**:
+- 每個使用者故事必須可獨立測試
+- 每個功能必須包含明確的驗收標準
+- 測試必須能夠自動化執行
+- 元件之間必須保持低耦合以便於單元測試
+- 測試覆蓋率必須足以驗證核心功能
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**理由**: 可測試性確保功能正確性，降低迴歸風險，提供重構信心。
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+### III. 最小可行產品（MVP）
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+**原則**: 優先交付核心價值，避免過早優化和不必要的功能。
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**規則**:
+- 使用者故事必須按優先級排序（P1、P2、P3...）
+- 每個優先級的功能必須可獨立交付和演示
+- P1 功能完成並驗證後才開始 P2
+- 移除或延後所有非核心功能
+- 每個迭代必須產出可演示的價值
+
+**理由**: MVP 方法加快反饋循環，降低浪費，確保資源投入在最重要的功能上。
+
+### IV. 避免過度設計
+
+**原則**: 採用最簡單可行的解決方案，遵循 YAGNI（You Aren't Gonna Need It）原則。
+
+**規則**:
+- 不實作未來可能需要的功能
+- 不建立超過當前需求的抽象層
+- 不引入非必要的設計模式或架構
+- 每個複雜度決策必須有明確的當前需求支持
+- 優先選擇簡單直接的實作方式
+
+**理由**: 過度設計增加複雜度、降低可讀性、延長開發時間，且經常猜錯未來需求。
+
+### V. 持續交付
+
+**原則**: 小步快跑，頻繁整合，及早發現問題。
+
+**規則**:
+- 每個任務完成後必須提交程式碼
+- 程式碼必須通過自動化檢查才能合併
+- 每個使用者故事完成後必須進行獨立驗證
+- 避免長期開發分支
+- 優先整合而非累積變更
+
+**理由**: 持續交付降低整合風險，加快問題發現，提高團隊協作效率。
+
+## 語言規範
+
+**原則**: 所有文件、註解、提交訊息必須使用正體中文。
+
+**規則**:
+- 所有 Markdown 文件內容使用正體中文
+- 程式碼註解使用正體中文
+- Git 提交訊息使用正體中文
+- 變數名稱、函式名稱使用英文（遵循程式語言慣例）
+- 技術術語在必要時可保留英文，但需附正體中文說明
+
+**理由**: 統一語言降低溝通成本，提高文件可讀性，便於團隊協作。
+
+## 開發工作流程
+
+### 規劃階段
+
+1. 功能需求必須明確記錄在 spec.md
+2. 使用者故事必須可獨立測試
+3. 驗收標準必須清晰可衡量
+
+### 設計階段
+
+1. 資料模型必須記錄在 data-model.md
+2. API 契約必須記錄在 contracts/
+3. 設計必須支援獨立測試
+
+### 實作階段
+
+1. 遵循任務清單順序（tasks.md）
+2. 每個使用者故事獨立實作和測試
+3. 完成一個使用者故事後才開始下一個
+
+### 驗證階段
+
+1. 每個使用者故事完成後獨立驗證
+2. 通過驗收標準檢查
+3. 程式碼審查通過才能合併
+
+## 治理規範
+
+### 憲法優先級
+
+本憲法的優先級高於所有其他開發慣例和指引。如有衝突，以本憲法為準。
+
+### 修訂流程
+
+1. 憲法修訂必須經過充分討論和記錄
+2. 修訂必須更新版本號（遵循語義化版本規範）
+3. 修訂必須同步更新相關範本和文件
+4. 修訂必須建立遷移計劃
+
+### 版本管理
+
+- **MAJOR**: 向後不相容的原則移除或重新定義
+- **MINOR**: 新增原則或顯著擴展指引
+- **PATCH**: 澄清說明、用詞修正、非語義改進
+
+### 合規審查
+
+1. 所有 Pull Request 必須驗證憲法合規性
+2. 任何複雜度增加必須有明確理由
+3. 定期審查憲法適用性和有效性
+
+### 例外處理
+
+如需違反憲法原則，必須：
+1. 在 plan.md 的 Complexity Tracking 章節記錄
+2. 說明為何需要違反
+3. 說明為何更簡單的方案不可行
+4. 取得團隊共識
+
+**版本**: 1.0.0 | **批准日期**: 2026-01-05 | **最後修訂**: 2026-01-05
