@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "AI News Assistant - 資訊來源配置範例（JSON 格式）",
+  "config": {
+    "version": "1.0.0",
+    "default_language": "en",
+    "default_timezone": "Asia/Taipei",
+    "max_items_per_source": 20
+  },
+  "keywords": [
+    "AI coding",
+    "large language model",
+    "LLM",
+    "GPT",
+    "Claude",
+    "Copilot",
+    "code generation",
+    "AI assistant"
+  ],
+  "sources": [
+    {
+      "name": "OpenAI Blog",
+      "type": "rss",
+      "tier": 1,
+      "url": "https://openai.com/news/rss.xml",
+      "enabled": true,
+      "description": "GPT 系列模型更新與 API 變更",
+      "env_var": null
+    },
+    {
+      "name": "Anthropic News",
+      "type": "rss",
+      "tier": 1,
+      "url": "https://www.anthropic.com/news-rss.xml",
+      "enabled": true,
+      "description": "Claude 模型動態",
+      "env_var": null
+    },
+    {
+      "name": "Google DeepMind",
+      "type": "rss",
+      "tier": 1,
+      "url": "https://deepmind.google/blog/rss.xml",
+      "enabled": true,
+      "description": "Gemini 與 AI 前沿研究",
+      "env_var": null
+    },
+    {
+      "name": "Meta AI",
+      "type": "rss",
+      "tier": 1,
+      "url": "https://ai.meta.com/blog/rss/",
+      "enabled": true,
+      "description": "Llama 開源系列",
+      "env_var": null
+    },
+    {
+      "name": "Mistral AI",
+      "type": "rss",
+      "tier": 1,
+      "url": "https://mistral.ai/news/index.xml",
+      "enabled": true,
+      "description": "歐洲最強模型，注重效能與成本平衡",
+      "env_var": null
+    },
+    {
+      "name": "Cursor Blog",
+      "type": "rss",
+      "tier": 2,
+      "url": "https://www.cursor.com/blog/feed.xml",
+      "enabled": true,
+      "description": "AI 原生編輯器動態",
+      "env_var": null
+    },
+    {
+      "name": "GitHub Changelog",
+      "type": "rss",
+      "tier": 2,
+      "url": "https://github.blog/changelog/feed/",
+      "enabled": true,
+      "description": "GitHub Copilot 與 GitHub Spark 功能更新",
+      "env_var": null
+    },
+    {
+      "name": "Codeium Blog",
+      "type": "rss",
+      "tier": 2,
+      "url": "https://codeium.com/blog/rss.xml",
+      "enabled": true,
+      "description": "Windsurf 等 Coding Agent 更新",
+      "env_var": null
+    },
+    {
+      "name": "VS Code Release",
+      "type": "github",
+      "tier": 2,
+      "repo": "microsoft/vscode",
+      "enabled": true,
+      "description": "插件系統與 AI 核心 API 變動",
+      "env_var": "GITHUB_TOKEN",
+      "fetch_type": "releases"
+    },
+    {
+      "name": "Zed Editor",
+      "type": "github",
+      "tier": 2,
+      "repo": "zed-industries/zed",
+      "enabled": true,
+      "description": "高性能編輯器與 AI 多模型串接",
+      "env_var": "GITHUB_TOKEN",
+      "fetch_type": "releases"
+    },
+    {
+      "name": "Vercel AI SDK",
+      "type": "github",
+      "tier": 3,
+      "repo": "vercel/ai",
+      "enabled": true,
+      "description": "前端整合 AI 最重要的 SDK",
+      "env_var": "GITHUB_TOKEN",
+      "fetch_type": "releases"
+    },
+    {
+      "name": "MCP Servers",
+      "type": "github",
+      "tier": 3,
+      "repo": "modelcontextprotocol/servers",
+      "enabled": true,
+      "description": "模型上下文協定擴充實作",
+      "env_var": "GITHUB_TOKEN",
+      "fetch_type": "releases"
+    },
+    {
+      "name": "LangChain.js",
+      "type": "github",
+      "tier": 3,
+      "repo": "langchain-ai/langchainjs",
+      "enabled": true,
+      "description": "建立複雜 AI Agent 邏輯",
+      "env_var": "GITHUB_TOKEN",
+      "fetch_type": "releases"
+    },
+    {
+      "name": "LlamaIndex.ts",
+      "type": "github",
+      "tier": 3,
+      "repo": "run-llama/LlamaIndexTS",
+      "enabled": true,
+      "description": "處理 RAG 的首選工具",
+      "env_var": "GITHUB_TOKEN",
+      "fetch_type": "releases"
+    },
+    {
+      "name": "Hacker News AI",
+      "type": "rss",
+      "tier": 3,
+      "url": "https://hnrss.org/frontpage?q=AI",
+      "enabled": true,
+      "description": "全球頂尖工程師討論",
+      "env_var": null
+    },
+    {
+      "name": "Reddit LocalLLaMA",
+      "type": "rss",
+      "tier": 3,
+      "url": "https://www.reddit.com/r/LocalLLaMA/.rss",
+      "enabled": true,
+      "description": "本地模型真實評測",
+      "env_var": null
+    },
+    {
+      "name": "TLDR AI",
+      "type": "web",
+      "tier": 3,
+      "url": "https://tldr.tech/ai",
+      "enabled": false,
+      "description": "每日 AI 摘要",
+      "env_var": null,
+      "note": "MVP 階段先停用 Web 抓取"
+    },
+    {
+      "name": "Ben's Bites",
+      "type": "web",
+      "tier": 3,
+      "url": "https://www.bensbites.co/",
+      "enabled": false,
+      "description": "商業與工具類 AI 趨勢",
+      "env_var": null,
+      "note": "MVP 階段先停用 Web 抓取"
+    }
+  ],
+  "source_options": {
+    "github": {
+      "timeout": 10,
+      "max_releases": 5,
+      "include_prereleases": false
+    },
+    "rss": {
+      "timeout": 10,
+      "max_items": 20,
+      "validate_ssl": true
+    },
+    "web": {
+      "timeout": 15,
+      "user_agent": "AI-News-Assistant/1.0"
+    }
+  }
+}
