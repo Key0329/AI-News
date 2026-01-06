@@ -166,9 +166,9 @@
 
 - **FR-001**: 系統必須支援定時排程機制，允許使用者設定每日固定執行時間（例如每天早上 8:00）。排程執行時間精確度為分鐘級別（±1 分鐘），使用使用者系統的本地時區作為預設時區
 - **FR-002**: 系統必須支援三層級資訊來源蒐集：層級 1（核心模型與 AI 實驗室的官方部落格 RSS，如 OpenAI、Anthropic、DeepMind、Meta AI、Mistral AI）、層級 2（AI Coding 編輯器與工具的 RSS 及 GitHub Release 追蹤，如 Cursor、GitHub Changelog、VS Code、Codeium、Zed Editor）、層級 3（開發框架 SDK 的 GitHub Release 及社群 RSS，如 Vercel AI SDK、MCP Servers、LangChain.js、LlamaIndex.ts、Hacker News AI、Reddit LocalLLaMA、TLDR AI、Ben's Bites）
-- **FR-003**: 系統必須能識別內容是否與「AI 應用」及「AI 輔助程式碼開發」相關，透過 Google Gemini API 進行語義判斷，檢查內容是否包含 AI 模型（如 GPT、Claude、Llama、Gemini）、AI 工具（如 Copilot、Cursor）、程式碼輔助、開發框架（如 LangChain、Vercel AI SDK）等相關主題，並過濾無關內容
+- **FR-003**: 系統必須能識別內容是否與「AI 應用」及「AI 輔助程式碼開發」相關，透過 Google Gemini API 進行**二元分類判斷**（使用分類 Prompt，輸出 JSON 格式的 relevant: true/false），檢查內容是否包含 AI 模型（如 GPT、Claude、Llama、Gemini）、AI 工具（如 Copilot、Cursor）、程式碼輔助、開發框架（如 LangChain、Vercel AI SDK）等相關主題，並過濾無關內容。此 API 調用與 FR-005 的摘要生成調用**使用不同 Prompt**，於過濾階段執行
 - **FR-004**: 系統必須能識別來自不同來源的重複內容，使用相對相似度門檻（標題 80% 相似度）結合內容指紋比對，並僅保留內容最完整的版本。「內容最完整」的判斷標準依序為：(1) 字數較多（至少多 20%），(2) 包含技術細節數量較多（如版本號、API 名稱、程式碼範例），(3) 來源層級較高（層級 1 > 層級 2 > 層級 3）
-- **FR-005**: 系統必須能透過 Google Gemini API（使用 Gemini 3.0 Flash Preview 模型）從英文內容中提煉 3-5 點核心摘要，並將摘要翻譯為繁體中文。「點」指的是 Markdown 條列項目（使用 `- ` 或 `* ` 開頭），每個條列項目為一個完整句子，長度建議在 15-40 字之間
+- **FR-005**: 系統必須能透過 Google Gemini API（使用 Gemini 3.0 Flash Preview 模型）從英文內容中**提煉 3-5 點核心摘要並翻譯為繁體中文**（使用摘要生成 Prompt，輸出 Markdown 條列格式）。「點」指的是 Markdown 條列項目（使用 `- ` 或 `* ` 開頭），每個條列項目為一個完整句子，長度建議在 15-40 字之間。此 API 調用與 FR-003 的相關性判斷調用**使用不同 Prompt**，於摘要生成階段執行，並採用批次處理（5 則為一批次）以優化成本
 - **FR-006**: 系統必須為每則資訊標註來源名稱、作者（若有）、發布時間及原始連結
 - **FR-007**: 系統必須產生結構化的摘要報告，格式為 Markdown，採用分層級結構：報告標題 → 日期 → 各層級來源區塊（層級 1：核心模型與 AI 實驗室、層級 2：AI Coding 編輯器與工具、層級 3：開發框架 SDK 與社群）→ 每則資訊包含標題、3-5 點核心摘要、來源名稱、作者（若有）、發布時間及原始連結
 - **FR-008**: 系統必須在蒐集流程中遇到來源無法連線或 API 速率限制時，跳過該來源並記錄錯誤日誌（包含錯誤類型和時間），不影響其他來源的蒐集
@@ -184,7 +184,7 @@
 - **FR-018**: 系統必須支援透過配置檔案中的 `enabled` 欄位啟用或停用特定資訊來源，停用的來源應被跳過而不影響其他來源的蒐集
 - **FR-019**: 系統必須在每次排程執行時重新載入配置檔案，允許使用者修改來源配置而無需重啟系統
 - **FR-020**: 系統必須採用模組化架構，支援註冊新的來源處理模組（如 RSS 處理器、API 處理器、Web 抓取器），新增管道類型時無需修改核心蒐集邏輯
-- **FR-021**: 系統必須限制每個來源的最大抓取數量為 20 則資訊，當來源返回超過此數量時，應優先選擇熱度最高的資訊。「熱度」衡量指標依序為：(1) 社群平台的投票數或評分（如 Hacker News 投票數、Reddit upvotes），(2) 發布時間（較新的優先），(3) 評論或互動數量
+- **FR-021**: 系統必須限制每個來源的最大抓取數量為 20 則資訊，當來源返回超過此數量時，應優先選擇熱度最高的資訊。「熱度」衡量指標依序為：(1) 社群平台的投票數或評分（如 Hacker News 投票數、Reddit upvotes），(2) 發布時間（較新的優先），(3) 評論或互動數量。**降級策略**：若來源不提供指標 (1)（如純 RSS feed），則僅依指標 (2) 發布時間排序；若發布時間亦缺失，則依指標 (3) 評論數排序；若均無，則保留原始順序（feed 提供的排序）。系統應在日誌中記錄使用的排序策略類型（如 "sorted_by_votes"、"sorted_by_time"、"sorted_by_comments"、"original_order"）
 - **FR-022**: 系統必須為配置檔案定義預設路徑為 `./config/sources.json` 或 `./config/sources.yaml`，並支援透過環境變數 `AI_NEWS_CONFIG_PATH` 自訂配置檔案路徑
 - **FR-023**: 系統必須為摘要報告定義儲存路徑為 `./output/digests/YYYY-MM-DD-digest.md`（依日期命名），並支援透過環境變數 `AI_NEWS_OUTPUT_PATH` 自訂輸出目錄。產生的檔案應設定為使用者可讀寫權限（644）
 - **FR-024**: 系統必須限制單次外部 API 調用（包括 AI API、NewsAPI、GitHub API、RSS 抓取）的超時時間為 30 秒，超時後應記錄錯誤並跳過該來源

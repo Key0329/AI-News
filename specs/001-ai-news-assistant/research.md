@@ -134,6 +134,63 @@
 
 ## 3. Gemini API Token 優化
 
+### 3.0 Gemini API 使用場景區分
+
+系統在兩個不同場景使用 Gemini API，各自使用獨立的 Prompt 設計：
+
+#### 場景 1: 內容相關性判斷（FR-003）
+
+**調用時機**: 蒐集階段後，過濾階段執行
+**目標**: 二元分類（相關 / 不相關）
+**輸入**: 文章標題 + 摘要（前 200 字）
+**輸出**: JSON 格式 `{"relevant": true/false, "confidence": 0.0-1.0, "reason": "..."}`
+
+**Prompt 設計（20-25 tokens）**:
+```
+判斷以下內容是否與「AI 模型、AI 工具、程式碼輔助、開發框架」相關。
+回傳 JSON: {"relevant": boolean, "confidence": number, "reason": string}
+
+標題: ${title}
+摘要: ${summary}
+```
+
+**Token 成本**: 每則約 250 tokens（Prompt 25 + 輸入 200 + 輸出 25）
+
+---
+
+#### 場景 2: 繁體中文摘要生成（FR-005）
+
+**調用時機**: 過濾階段後，摘要生成階段執行
+**目標**: 提煉 3-5 點核心摘要並翻譯
+**輸入**: 結構化內容（標題 + 關鍵摘要 + 關鍵字）
+**輸出**: Markdown 格式條列（3-5 點，每點 15-40 字）
+
+**Prompt 設計（35-40 tokens）** - 詳見 3.1 節
+
+**Token 成本**: 每則約 350 tokens（Prompt 40 + 輸入 300 + 輸出 100）
+
+---
+
+#### 調用順序
+
+```
+蒐集資訊 (collectors)
+    ↓
+【Gemini 場景 1】相關性判斷 (relevance-filter.js)
+    ↓ 保留相關內容
+去重處理 (deduplicator.js)
+    ↓
+【Gemini 場景 2】摘要生成 (gemini-summarizer.js)
+    ↓
+報告產生 (markdown-generator.js)
+```
+
+**批次策略差異**:
+- **場景 1（相關性判斷）**: 批次 10 則（輕量級分類，可批次更多）
+- **場景 2（摘要生成）**: 批次 5 則（重量級生成，限制批次數）
+
+---
+
 ### 3.1 Prompt 設計
 
 **System Prompt（精簡版，35-40 tokens）**:

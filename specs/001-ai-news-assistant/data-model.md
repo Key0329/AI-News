@@ -160,6 +160,13 @@ interface Source {
   last_success_at?: string;      // 上次成功時間（ISO 8601）
   last_error_type?: "connection" | "auth" | "parse" | "timeout" | "other";
   last_error_message?: string;   // 上次錯誤訊息
+
+  // 來源能力標記（用於熱度排序降級策略，FR-021）
+  capabilities?: {
+    provides_votes: boolean;     // 是否提供投票數/評分
+    provides_comments: boolean;  // 是否提供評論數
+    provides_pubdate: boolean;   // 是否提供發布時間
+  };
 }
 ```
 
@@ -177,7 +184,12 @@ interface Source {
   "timeout_ms": 30000,
   "last_success_at": "2026-01-06T02:15:12Z",
   "last_error_type": null,
-  "last_error_message": null
+  "last_error_message": null,
+  "capabilities": {
+    "provides_votes": false,
+    "provides_comments": false,
+    "provides_pubdate": true
+  }
 }
 ```
 
@@ -608,6 +620,55 @@ interface ScheduleConfig {
   }
 }
 ```
+
+---
+
+### 10. 執行狀態（Execution State）
+
+**用途**: 追蹤系統執行進度，支援崩潰恢復檢測（FR-030）
+
+**儲存位置**: `./data/execution-state.json`
+
+**Schema**:
+
+```typescript
+interface ExecutionState {
+  execution_id: string;          // 格式: "exec_YYYYMMDD_HHMM"
+  started_at: string;            // ISO 8601 格式
+  current_stage: "collecting" | "deduplicating" | "filtering" | "summarizing" | "generating";
+  items_collected: number;       // 已蒐集項數
+  items_processed: number;       // 已處理項數
+  last_updated: string;          // ISO 8601 格式
+}
+```
+
+**範例**:
+
+```json
+{
+  "execution_id": "exec_20260106_0215",
+  "started_at": "2026-01-06T02:15:00Z",
+  "current_stage": "summarizing",
+  "items_collected": 15,
+  "items_processed": 10,
+  "last_updated": "2026-01-06T02:18:30Z"
+}
+```
+
+**生命週期**:
+- **建立**: 系統啟動時（src/index.js main() 函式開頭）
+- **更新**: 每個階段開始時（collecting → deduplicating → filtering → summarizing → generating）
+- **刪除**: 執行成功完成時，或使用者確認清理未完成任務時
+
+**驗證規則**:
+- `execution_id`: 必填，格式 `/^exec_\d{8}_\d{4}$/`
+- `started_at`, `last_updated`: 必填，有效 ISO 8601 格式
+- `current_stage`: 必填，必須為枚舉值之一
+
+**恢復檢測邏輯**:
+- 若 `execution-state.json` 存在且距離 `started_at` 超過 2 小時，視為異常未完成任務
+- 系統啟動時顯示恢復提示，詢問使用者是否清理並重新開始
+- MVP 版本可簡化為自動清理，進階版可提供使用者選擇
 
 ---
 
