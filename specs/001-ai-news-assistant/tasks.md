@@ -26,12 +26,12 @@
 
 **目的**: 建立專案基礎結構與依賴
 
-- [ ] T001 初始化 Node.js 專案結構，建立 src/, config/, data/, output/digests/, logs/, tests/ 目錄
-- [ ] T002 [P] 建立 package.json，設定 dependencies（rss-parser, @google/generative-ai, @octokit/rest）與 devDependencies（vitest）
-- [ ] T003 [P] 建立 .gitignore 檔案，排除 data/, logs/, output/, .env, node_modules/
-- [ ] T004 [P] 建立 .env.example 檔案，包含 GEMINI_API_KEY, GITHUB_TOKEN, NEWSAPI_KEY 等環境變數範本
-- [ ] T005 [P] 建立 config/sources.example.json 範例配置檔案，包含三層級至少 3 個來源範例
-- [ ] T006 [P] 建立 README.md，包含專案說明、安裝步驟、快速開始指引
+- [X] T001 初始化 Node.js 專案結構，建立 src/, config/, data/, output/digests/, logs/, tests/ 目錄
+- [X] T002 [P] 建立 package.json，設定 dependencies（rss-parser, @google/generative-ai, @octokit/rest）與 devDependencies（vitest）
+- [X] T003 [P] 建立 .gitignore 檔案，排除 data/, logs/, output/, .env, node_modules/
+- [X] T004 [P] 建立 .env.example 檔案，包含 GEMINI_API_KEY, GITHUB_TOKEN, NEWSAPI_KEY 等環境變數範本
+- [X] T005 [P] 建立 config/sources.example.json 範例配置檔案，包含三層級至少 3 個來源範例
+- [X] T006 [P] 建立 README.md，包含專案說明、安裝步驟、快速開始指引
 
 ---
 
@@ -41,16 +41,16 @@
 
 **⚠️ 關鍵**: 所有 User Story 依賴此階段完成
 
-- [ ] T007 建立 src/utils/config-loader.js，實作配置檔案載入與驗證（支援 sources.json 與環境變數）
-- [ ] T008 [P] 建立 src/utils/logger.js，實作日誌系統（包含敏感資訊遮蔽、JSON 格式輸出）
-- [ ] T009 [P] 建立 src/utils/env-validator.js，實作環境變數驗證（檢查 GEMINI_API_KEY, GITHUB_TOKEN 等必要變數）
-- [ ] T010 [P] 建立 src/models/news-item.js，定義 NewsItem 資料結構與驗證規則
-- [ ] T011 [P] 建立 src/models/source.js，定義 Source 資料結構與驗證規則
-- [ ] T012 [P] 建立 src/utils/file-manager.js，實作 JSON 檔案讀寫（items.json, dedup-index.json）
-- [ ] T013 建立 src/utils/data-cleaner.js，實作每日資料清理邏輯（檢查 retention_until，刪除過期項目）
-- [ ] T013a [P] 建立 src/utils/execution-state.js，實作執行狀態追蹤（記錄當前階段、開始時間、處理項數到 data/execution-state.json）
-- [ ] T013b 在 src/index.js 中實作系統啟動時恢復檢測（檢查 data/execution-state.json 是否存在且時間戳記 < 2 小時前）
-- [ ] T013c 在 src/index.js 中實作恢復提示機制（偵測到未完成任務時，顯示訊息並自動清理或詢問使用者：「偵測到未完成的執行任務（階段：{stage}，開始時間：{time}），是否要清理並重新開始？[Y/n]」，符合 FR-030）
+- [X] T007 建立 src/utils/config-loader.js，實作配置檔案載入與驗證（支援 sources.json 與環境變數）
+- [X] T008 [P] 建立 src/utils/logger.js，實作日誌系統（包含敏感資訊遮蔽、JSON 格式輸出）
+- [X] T009 [P] 建立 src/utils/env-validator.js，實作環境變數驗證（檢查 GEMINI_API_KEY, GITHUB_TOKEN 等必要變數）
+- [X] T010 [P] 建立 src/models/news-item.js，定義 NewsItem 資料結構與驗證規則
+- [X] T011 [P] 建立 src/models/source.js，定義 Source 資料結構與驗證規則
+- [X] T012 [P] 建立 src/utils/file-manager.js，實作 JSON 檔案讀寫（items.json, dedup-index.json）
+- [X] T013 建立 src/utils/data-cleaner.js，實作每日資料清理邏輯（檢查 retention_until，刪除過期項目）
+- [X] T013a [P] 建立 src/utils/execution-state.js，實作執行狀態追蹤（記錄當前階段、開始時間、處理項數到 data/execution-state.json）
+- [X] T013b 在 src/index.js 中實作系統啟動時恢復檢測（檢查 data/execution-state.json 是否存在且時間戳記 < 2 小時前）
+- [X] T013c 在 src/index.js 中實作恢復提示機制（偵測到未完成任務時，顯示訊息並自動清理或詢問使用者：「偵測到未完成的執行任務（階段：{stage}，開始時間：{time}），是否要清理並重新開始？[Y/n]」，符合 FR-030）
 
 **Checkpoint**: ✅ 基礎設施完成 - User Story 實作現在可以開始平行進行
 
@@ -66,12 +66,12 @@
 
 ### 實作任務（User Story 5）
 
-- [ ] T014 [P] [US5] 在 src/utils/config-loader.js 中實作 loadSourcesConfig() 函式，讀取並解析 sources.json
-- [ ] T015 [P] [US5] 在 src/utils/config-loader.js 中實作 validateSourcesConfig() 函式，驗證配置格式與必要欄位（version, sources 陣列至少 3 個）
-- [ ] T016 [US5] 在 src/utils/config-loader.js 中實作 reloadConfigIfChanged() 函式，支援配置檔案熱重載（每次排程執行時重新載入）
-- [ ] T017 [US5] 在 src/utils/config-loader.js 中實作來源 enabled 欄位檢查，過濾停用的來源
-- [ ] T018 [US5] 在 src/utils/env-validator.js 中實作 validateRequiredEnvVars() 函式，驗證來源配置中標記的環境變數是否存在
-- [ ] T019 [US5] 在 src/index.js 中整合配置載入邏輯，系統啟動時驗證配置並處理錯誤（顯示缺少欄位訊息）
+- [X] T014 [P] [US5] 在 src/utils/config-loader.js 中實作 loadSourcesConfig() 函式，讀取並解析 sources.json
+- [X] T015 [P] [US5] 在 src/utils/config-loader.js 中實作 validateSourcesConfig() 函式，驗證配置格式與必要欄位（version, sources 陣列至少 3 個）
+- [X] T016 [US5] 在 src/utils/config-loader.js 中實作 reloadConfigIfChanged() 函式，支援配置檔案熱重載（每次排程執行時重新載入）
+- [X] T017 [US5] 在 src/utils/config-loader.js 中實作來源 enabled 欄位檢查，過濾停用的來源
+- [X] T018 [US5] 在 src/utils/env-validator.js 中實作 validateRequiredEnvVars() 函式，驗證來源配置中標記的環境變數是否存在
+- [X] T019 [US5] 在 src/index.js 中整合配置載入邏輯，系統啟動時驗證配置並處理錯誤（顯示缺少欄位訊息）
 
 **Checkpoint**: ✅ 配置化系統完成 - 可透過修改 sources.json 動態管理來源
 

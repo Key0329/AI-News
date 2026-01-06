@@ -1,0 +1,32 @@
+{
+  "name": "ai-news-assistant",
+  "version": "0.1.0",
+  "description": "AI & AI Coding 自動化情報助手 - 定時蒐集 AI 相關資訊並產生繁體中文摘要報告",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "keywords": [
+    "ai",
+    "news",
+    "rss",
+    "automation",
+    "gemini"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "rss-parser": "^3.13.0",
+    "@google/generative-ai": "^0.21.0",
+    "@octokit/rest": "^20.1.1"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

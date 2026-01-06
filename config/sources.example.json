@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "global_settings": {
+    "default_timeout_ms": 30000,
+    "default_max_items": 20,
+    "default_timezone": "Asia/Taipei"
+  },
+  "sources": [
+    {
+      "name": "Anthropic News",
+      "tier": 1,
+      "type": "rss",
+      "url": "https://www.anthropic.com/news/rss.xml",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "OpenAI Blog",
+      "tier": 1,
+      "type": "rss",
+      "url": "https://openai.com/blog/rss.xml",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "VS Code Releases",
+      "tier": 2,
+      "type": "api",
+      "url": "https://api.github.com/repos/microsoft/vscode/releases",
+      "auth_required": true,
+      "auth_env_var": "GITHUB_TOKEN",
+      "enabled": true,
+      "max_items": 5,
+      "timeout_ms": 30000,
+      "api_params": {
+        "endpoint": "/repos/microsoft/vscode/releases",
+        "method": "GET"
+      },
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    }
+  ]
+}
