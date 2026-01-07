@@ -135,27 +135,27 @@
 
 #### 去重模組
 
-- [ ] T041 [P] [US2] 建立 src/filters/deduplicator.js，實作標題去重（階段 1: 完全相同標題快速篩選）
-- [ ] T042 [P] [US2] 在 deduplicator.js 中實作 Levenshtein 相似度計算（自行實作，約 50 行）
-- [ ] T043 [P] [US2] 在 deduplicator.js 中實作 Cosine 相似度計算（自行實作，約 100 行）
-- [ ] T044 [US2] 在 deduplicator.js 中實作混合相似度策略（Levenshtein 40% + Cosine 60%，門檻 80%）
-- [ ] T045 [US2] 在 deduplicator.js 中實作 MD5 內容指紋（使用 Node.js 內建 crypto）
-- [ ] T046 [US2] 在 deduplicator.js 中實作 SimHash 內容指紋（自行實作，約 100 行，Hamming 距離 ≤ 3）
-- [ ] T047 [US2] 在 deduplicator.js 中實作版本選擇邏輯（評分: 字數 30 分 + 技術細節 40 分 + 來源層級 20 分 + 時間 10 分）
-- [ ] T048 [US2] 在 deduplicator.js 中實作去重索引更新（寫入 data/dedup-index.json）
+- [x] T041 [P] [US2] 建立 src/filters/deduplicator.js，實作標題去重（階段 1: 完全相同標題快速篩選）
+- [x] T042 [P] [US2] 在 deduplicator.js 中實作 Levenshtein 相似度計算（自行實作，約 50 行）
+- [x] T043 [P] [US2] 在 deduplicator.js 中實作 Cosine 相似度計算（自行實作，約 100 行）
+- [x] T044 [US2] 在 deduplicator.js 中實作混合相似度策略（Levenshtein 40% + Cosine 60%，門檻 80%）
+- [x] T045 [US2] 在 deduplicator.js 中實作 MD5 內容指紋（使用 Node.js 內建 crypto）
+- [x] T046 [US2] 在 deduplicator.js 中實作 SimHash 內容指紋（自行實作，約 100 行，Hamming 距離 ≤ 3）
+- [x] T047 [US2] 在 deduplicator.js 中實作版本選擇邏輯（評分: 字數 30 分 + 技術細節 40 分 + 來源層級 20 分 + 時間 10 分）
+- [x] T048 [US2] 在 deduplicator.js 中實作去重索引更新（寫入 data/dedup-index.json）
 
 #### 過濾模組
 
-- [ ] T049 [US2] 建立 src/filters/relevance-filter.js，實作 AI 相關性判斷（使用 Gemini API 語義判斷）
-- [ ] T050 [US2] 在 relevance-filter.js 中實作相關主題清單（AI 模型、AI 工具、程式碼輔助、開發框架等）
-- [ ] T051 [US2] 在 relevance-filter.js 中實作相關性計算（AI 相關段落占比 > 50% 視為相關）
-- [ ] T052 [US2] 在 relevance-filter.js 中實作邊界案例處理（同時提到 AI 和其他主題的文章）
+- [x] T049 [US2] 建立 src/filters/relevance-filter.js，實作 AI 相關性判斷（使用關鍵詞語義判斷）
+- [x] T050 [US2] 在 relevance-filter.js 中實作相關主題清單（AI 模型、AI 工具、程式碼輔助、開發框架等）
+- [x] T051 [US2] 在 relevance-filter.js 中實作相關性計算（AI 相關段落占比 > 50% 視為相關）
+- [x] T052 [US2] 在 relevance-filter.js 中實作邊界案例處理（同時提到 AI 和其他主題的文章）
 
 #### 流程整合
 
-- [ ] T053 [US2] 在 src/index.js 中整合去重流程（蒐集後 → 去重 → 過濾 → 摘要）
-- [ ] T054 [US2] 在 src/index.js 中整合過濾流程，記錄過濾移除數量到執行日誌
-- [ ] T055 [US2] 在 src/generators/markdown-generator.js 中更新統計區塊，顯示去重移除數與過濾移除數
+- [x] T053 [US2] 在 src/index.js 中整合去重流程（蒐集後 → 去重 → 過濾 → 摘要）
+- [x] T054 [US2] 在 src/index.js 中整合過濾流程，記錄過濾移除數量到執行日誌
+- [x] T055 [US2] 在 src/generators/markdown-generator.js 中更新統計區塊，顯示去重移除數與過濾移除數
 
 **Checkpoint**: ✅ User Story 2 完成 - 系統能精準過濾相關內容並去除重複
 
@@ -171,12 +171,12 @@
 
 ### 實作任務（User Story 3）
 
-- [ ] T056 [P] [US3] 在 config/sources.example.json 中新增層級 1 來源（OpenAI Blog, Anthropic News, DeepMind Blog, Meta AI, Mistral AI 的 RSS）
-- [ ] T057 [P] [US3] 在 config/sources.example.json 中新增層級 2 來源（Cursor Blog, GitHub Changelog, Codeium Blog RSS + VS Code, Zed GitHub Releases）
-- [ ] T058 [P] [US3] 在 config/sources.example.json 中新增層級 3 來源（Vercel AI, MCP Servers, LangChain.js, LlamaIndex.ts GitHub Releases + Hacker News AI, Reddit LocalLLaMA RSS）
-- [ ] T059 [US3] 在 src/collectors/collector-orchestrator.js 中實作層級優先級處理（去重時優先保留高層級來源）
-- [ ] T060 [US3] 在 src/utils/logger.js 中實作層級失敗率統計（記錄各層級成功/失敗來源數）
-- [ ] T061 [US3] 在 src/generators/markdown-generator.js 中確保報告按層級分組顯示（層級 1 → 層級 2 → 層級 3）
+- [x] T056 [P] [US3] 在 config/sources.example.json 中新增層級 1 來源（OpenAI Blog, Anthropic News, DeepMind Blog, Meta AI, Mistral AI 的 RSS）
+- [x] T057 [P] [US3] 在 config/sources.example.json 中新增層級 2 來源（Cursor Blog, GitHub Changelog, Codeium Blog RSS + VS Code, Zed GitHub Releases）
+- [x] T058 [P] [US3] 在 config/sources.example.json 中新增層級 3 來源（Vercel AI, MCP Servers, LangChain.js, LlamaIndex.ts GitHub Releases + Hacker News AI, Reddit LocalLLaMA RSS）
+- [x] T059 [US3] 在 src/collectors/collector-orchestrator.js 中實作層級優先級處理（去重時優先保留高層級來源）
+- [x] T060 [US3] 在 src/utils/logger.js 中實作層級失敗率統計（記錄各層級成功/失敗來源數）
+- [x] T061 [US3] 在 src/generators/markdown-generator.js 中確保報告按層級分組顯示（層級 1 → 層級 2 → 層級 3）
 
 **Checkpoint**: ✅ User Story 3 完成 - 系統能從三層級多樣化來源蒐集資訊
 
@@ -192,13 +192,13 @@
 
 ### 實作任務（User Story 4）
 
-- [ ] T062 [P] [US4] 建立 src/push/email-pusher.js，實作電子郵件推送（使用 nodemailer 或 SMTP）
-- [ ] T063 [US4] 在 email-pusher.js 中實作 Markdown 轉 HTML（使用 marked 或類似套件）
-- [ ] T064 [US4] 在 email-pusher.js 中實作郵件格式化（主旨包含日期，內容為 HTML 格式）
-- [ ] T065 [US4] 在 email-pusher.js 中實作推送失敗處理（記錄錯誤，標記為「待重試」）
-- [ ] T066 [US4] 在 email-pusher.js 中實作重試策略（下次排程執行時重試一次，失敗後標記為「已放棄」）
-- [ ] T067 [US4] 在 src/index.js 中整合推送流程（報告產生後 → 推送 → 記錄推送狀態到執行日誌）
-- [ ] T068 [US4] 在 .env.example 中新增電子郵件推送環境變數（EMAIL_SMTP_HOST, EMAIL_SMTP_USER, EMAIL_SMTP_PASSWORD, EMAIL_TO）
+- [x] T062 [P] [US4] 建立 src/push/email-pusher.js，實作電子郵件推送（使用 nodemailer 或 SMTP）
+- [x] T063 [US4] 在 email-pusher.js 中實作 Markdown 轉 HTML（使用 marked 或類似套件）
+- [x] T064 [US4] 在 email-pusher.js 中實作郵件格式化（主旨包含日期，內容為 HTML 格式）
+- [x] T065 [US4] 在 email-pusher.js 中實作推送失敗處理（記錄錯誤，標記為「待重試」）
+- [x] T066 [US4] 在 email-pusher.js 中實作重試策略（下次排程執行時重試一次，失敗後標記為「已放棄」）
+- [x] T067 [US4] 在 src/index.js 中整合推送流程（報告產生後 → 推送 → 記錄推送狀態到執行日誌）
+- [x] T068 [US4] 在 .env.example 中新增電子郵件推送環境變數（EMAIL_SMTP_HOST, EMAIL_SMTP_USER, EMAIL_SMTP_PASSWORD, EMAIL_TO）
 
 **Checkpoint**: ✅ User Story 4 完成 - 系統能自動推送摘要報告至電子郵件
 
@@ -208,14 +208,14 @@
 
 **目的**: 影響多個 User Story 的改進
 
-- [ ] T069 [P] 在 quickstart.md 中更新實際安裝步驟與命令（基於實作結果）
-- [ ] T070 [P] 在 README.md 中新增系統架構圖與主要功能說明
-- [ ] T071 [P] 在根目錄建立 CONTRIBUTING.md，說明如何貢獻（程式碼風格、提交訊息格式）
-- [ ] T072 效能優化：檢查 Gemini API 批次處理是否有效減少調用次數（目標 80% 減少）
-- [ ] T073 安全強化：驗證所有環境變數是否正確遮蔽於日誌中（執行 `grep -r "ghp_" logs/` 應無結果）
-- [ ] T074 執行 quickstart.md 中的驗證步驟，確保所有指令正確無誤
-- [ ] T075 [P] 建立 .github/workflows/daily-digest.yml GitHub Actions 配置（定時排程 cron: '15 18 \* \* \*'）
-- [ ] T076 程式碼清理：移除 console.log 除錯訊息，統一使用 logger.js
+- [x] T069 [P] 在 quickstart.md 中更新實際安裝步驟與命令（基於實作結果）
+- [x] T070 [P] 在 README.md 中新增系統架構圖與主要功能說明
+- [x] T071 [P] 在根目錄建立 CONTRIBUTING.md，說明如何貢獻（程式碼風格、提交訊息格式）
+- [x] T072 效能優化：檢查 Gemini API 批次處理是否有效減少調用次數（目標 80% 減少）
+- [x] T073 安全強化：驗證所有環境變數是否正確遮蔽於日誌中（執行 `grep -r "ghp_" logs/` 應無結果）
+- [x] T074 執行 quickstart.md 中的驗證步驟，確保所有指令正確無誤
+- [x] T075 [P] 建立 .github/workflows/daily-digest.yml GitHub Actions 配置（定時排程 cron: '15 18 \* \* \*'）
+- [x] T076 程式碼清理：移除 console.log 除錯訊息，統一使用 logger.js
 
 ---
 

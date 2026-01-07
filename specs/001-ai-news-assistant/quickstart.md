@@ -32,11 +32,13 @@ npm install
 ```
 
 **預期輸出**:
+
 ```
 added 15 packages in 8s
 ```
 
 **依賴清單** (`package.json`):
+
 ```json
 {
   "dependencies": {
@@ -81,22 +83,41 @@ AI_NEWS_LOGS_PATH=./logs
 SCHEDULE_TIME=02:15
 SCHEDULE_TIMEZONE=Asia/Taipei
 SCHEDULE_ENABLED=true
+
+# 電子郵件推送（選填，User Story 4）
+EMAIL_SMTP_HOST=smtp.gmail.com
+EMAIL_SMTP_PORT=587
+EMAIL_SMTP_USER=your_email@gmail.com
+EMAIL_SMTP_PASSWORD=your_app_password_here
+EMAIL_TO=recipient@example.com
+EMAIL_FROM="AI News Assistant <your_email@gmail.com>"
 ```
 
 **如何取得 API 金鑰**:
 
 1. **Gemini API Key**:
+
    - 前往 [Google AI Studio](https://ai.google.dev/)
    - 登入 Google 帳號
    - 點選「Get API Key」→「Create API Key」
    - 複製金鑰並貼到 `.env` 檔案
 
 2. **GitHub Personal Access Token**:
+
    - 前往 [GitHub Settings → Tokens](https://github.com/settings/tokens)
    - 點選「Generate new token (classic)」
    - **Scopes**: 勾選 `public_repo` 和 `repo:status`
    - 點選「Generate token」
    - 複製 Token（格式: `ghp_xxx...`）並貼到 `.env` 檔案
+
+3. **Gmail App Password**（選填，若需要電子郵件推送）:
+   - 前往 [Google Account Security](https://myaccount.google.com/security)
+   - 啟用「2-Step Verification」（兩步驟驗證）
+   - 搜尋「App passwords」（應用程式密碼）
+   - 選擇「Mail」→「Other」，輸入「AI News Assistant」
+   - 點選「Generate」
+   - 複製 16 位數密碼（格式: `abcd efgh ijkl mnop`）
+   - 貼到 `.env` 檔案的 `EMAIL_SMTP_PASSWORD`（移除空格）
 
 ---
 
@@ -159,6 +180,7 @@ code config/sources.json
 ```
 
 **配置說明**:
+
 - `tier`: 來源層級（1=官方部落格, 2=工具, 3=社群）
 - `type`: 來源類型（`rss` 或 `api`）
 - `enabled`: 設為 `false` 可暫時停用來源
@@ -305,8 +327,8 @@ name: Daily AI News Digest
 
 on:
   schedule:
-    - cron: '15 18 * * *'  # 每天 18:15 UTC (次日 02:15 台灣時間)
-  workflow_dispatch:       # 允許手動觸發
+    - cron: "15 18 * * *" # 每天 18:15 UTC (次日 02:15 台灣時間)
+  workflow_dispatch: # 允許手動觸發
 
 jobs:
   digest:
@@ -317,7 +339,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Install dependencies
         run: npm install
@@ -337,6 +359,7 @@ jobs:
 ```
 
 **設定 Secrets**:
+
 1. 前往 GitHub Repository → Settings → Secrets and variables → Actions
 2. 新增 `GEMINI_API_KEY`
 
@@ -382,6 +405,7 @@ crontab -e
 ```
 
 **支援的來源類型**:
+
 - **RSS**: 標準 RSS 2.0 或 Atom 1.0 feed
 - **API**: GitHub Releases API（使用 `@octokit/rest`）
 
@@ -418,12 +442,12 @@ cat logs/$(ls -t logs/ | head -1)
 
 **常見錯誤**:
 
-| 錯誤訊息 | 原因 | 解決方案 |
-|---------|------|---------|
-| `GEMINI_API_KEY is not set` | 環境變數未設定 | 檢查 `.env` 檔案 |
-| `Request timeout` | 來源連線超時 | 檢查網路連線或增加 `timeout_ms` |
-| `Invalid RSS format` | RSS feed 格式錯誤 | 驗證 RSS URL 是否正確 |
-| `Rate limit exceeded` | API 速率限制 | 等待一小時後重試，或減少來源數量 |
+| 錯誤訊息                    | 原因              | 解決方案                         |
+| --------------------------- | ----------------- | -------------------------------- |
+| `GEMINI_API_KEY is not set` | 環境變數未設定    | 檢查 `.env` 檔案                 |
+| `Request timeout`           | 來源連線超時      | 檢查網路連線或增加 `timeout_ms`  |
+| `Invalid RSS format`        | RSS feed 格式錯誤 | 驗證 RSS URL 是否正確            |
+| `Rate limit exceeded`       | API 速率限制      | 等待一小時後重試，或減少來源數量 |
 
 ### Q5: 如何手動清理舊資料？
 
@@ -446,6 +470,7 @@ find logs/ -name "*.log" -mtime +14 -delete
 4. **調整摘要長度**: 修改 System Prompt，縮短每點摘要字數
 
 **成本估算**（Gemini 3.0 Flash Preview）:
+
 - 每日 100 則資訊：約 $0.02（使用批次 + 快取策略）
 - 每月成本：約 $0.60
 
@@ -478,7 +503,7 @@ cp data/items.backup.json data/items.json
 編輯 `src/filters/relevance-filter.js`:
 
 ```javascript
-const RELEVANCE_THRESHOLD = 0.5;  // 調整相關性門檻（0-1）
+const RELEVANCE_THRESHOLD = 0.5; // 調整相關性門檻（0-1）
 
 const RELEVANT_TOPICS = [
   "AI 模型",
@@ -487,7 +512,7 @@ const RELEVANT_TOPICS = [
   "開發框架",
   // 新增自訂主題
   "機器學習",
-  "深度學習"
+  "深度學習",
 ];
 ```
 
@@ -496,7 +521,7 @@ const RELEVANT_TOPICS = [
 編輯 `src/filters/deduplicator.js`:
 
 ```javascript
-const SIMILARITY_THRESHOLD = 0.8;  // 調整相似度門檻（0-1）
+const SIMILARITY_THRESHOLD = 0.8; // 調整相似度門檻（0-1）
 ```
 
 ### 自訂摘要批次大小
@@ -504,8 +529,8 @@ const SIMILARITY_THRESHOLD = 0.8;  // 調整相似度門檻（0-1）
 編輯 `src/summarizers/batch-processor.js`:
 
 ```javascript
-const BATCH_SIZE = 5;              // 每批次處理項數（建議 3-10）
-const BATCH_DELAY_MS = 1000;       // 批次間延遲（毫秒）
+const BATCH_SIZE = 5; // 每批次處理項數（建議 3-10）
+const BATCH_DELAY_MS = 1000; // 批次間延遲（毫秒）
 ```
 
 ---
@@ -622,16 +647,19 @@ chmod +x src/index.js
 完成 Quick Start 後，您可以：
 
 1. **閱讀完整文檔**:
+
    - [資料模型設計](./data-model.md)
    - [實作計劃](./plan.md)
    - [功能規格](./spec.md)
 
 2. **自訂配置**:
+
    - 新增更多資訊來源
    - 調整過濾規則
    - 客製化摘要格式
 
 3. **設定自動化**:
+
    - 配置 GitHub Actions
    - 設定本地 Cron Job
    - 整合推送通知（電子郵件、Slack）

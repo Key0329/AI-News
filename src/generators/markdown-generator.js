@@ -25,13 +25,21 @@ class MarkdownGenerator {
    * @param {Object} data - 報告資料
    * @param {Array} data.items - 資訊項目陣列
    * @param {Object} data.collectionStats - 蒐集統計
+   * @param {Object} data.dedupStats - 去重統計
+   * @param {Object} data.filterStats - 過濾統計
    * @param {Object} data.summarizationStats - 摘要統計
    * @param {Object} data.executionSummary - 執行摘要
    * @returns {string} - Markdown 格式的報告
    */
   generate(data) {
-    const { items, collectionStats, summarizationStats, executionSummary } =
-      data;
+    const {
+      items,
+      collectionStats,
+      dedupStats,
+      filterStats,
+      summarizationStats,
+      executionSummary,
+    } = data;
 
     logger.info(`[Markdown Generator] 開始生成報告，共 ${items.length} 則資訊`);
 
@@ -42,7 +50,13 @@ class MarkdownGenerator {
 
     // 2. 摘要統計
     sections.push(
-      this._generateSummaryStats(items, collectionStats, summarizationStats)
+      this._generateSummaryStats(
+        items,
+        collectionStats,
+        summarizationStats,
+        dedupStats,
+        filterStats
+      )
     );
 
     // 3. 資訊內容（按層級分組）
@@ -89,7 +103,13 @@ class MarkdownGenerator {
    * 生成摘要統計區塊
    * @private
    */
-  _generateSummaryStats(items, collectionStats, summarizationStats) {
+  _generateSummaryStats(
+    items,
+    collectionStats,
+    summarizationStats,
+    dedupStats,
+    filterStats
+  ) {
     // 按層級統計
     const tier1Count = items.filter((i) => i.source?.tier === 1).length;
     const tier2Count = items.filter((i) => i.source?.tier === 2).length;
@@ -108,6 +128,13 @@ class MarkdownGenerator {
     ).length;
     const summaryFailure = items.length - summarySuccess;
 
+    // 處理流程統計
+    const collectedCount = collectionStats?.total_items || items.length;
+    const dedupedCount = dedupStats?.items_after || collectedCount;
+    const filteredCount = filterStats?.items_after || dedupedCount;
+    const duplicatesRemoved = dedupStats?.duplicates_removed || 0;
+    const irrelevantFiltered = filterStats?.filtered_out || 0;
+
     return `## 📊 摘要統計
 
 ### 資訊分佈
@@ -118,6 +145,15 @@ class MarkdownGenerator {
 | 🛠️ 層級 2 | AI Coding 工具 & Releases | ${tier2Count} 則 |
 | 🌐 層級 3 | 開發框架 & 社群討論 | ${tier3Count} 則 |
 | **總計** | | **${items.length} 則** |
+
+### 處理流程
+
+| 階段 | 項目數 | 說明 |
+|------|--------|------|
+| 📥 蒐集 | ${collectedCount} | 從來源蒐集的原始資訊 |
+| 🔄 去重 | ${dedupedCount} | 去除 ${duplicatesRemoved} 個重複項 |
+| 🎯 過濾 | ${filteredCount} | 過濾 ${irrelevantFiltered} 個不相關項 |
+| ✅ 最終 | ${items.length} | 包含摘要的最終資訊 |
 
 ### 來源統計
 

@@ -1,0 +1,72 @@
+name: Daily AI News Digest
+
+on:
+  schedule:
+    # 每天 18:15 UTC (次日 02:15 台灣時間 UTC+8)
+    - cron: "15 18 * * *"
+
+  # 允許手動觸發
+  workflow_dispatch:
+
+jobs:
+  generate-digest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create required directories
+        run: |
+          mkdir -p data output/digests logs
+          echo '{"items": [], "metadata": {"version": "1.0.0"}}' > data/items.json
+          echo '{"title_signatures": {}, "content_fingerprints": {}, "metadata": {}}' > data/dedup-index.json
+
+      - name: Run daily digest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          EMAIL_SMTP_HOST: ${{ secrets.EMAIL_SMTP_HOST }}
+          EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
+          EMAIL_SMTP_USER: ${{ secrets.EMAIL_SMTP_USER }}
+          EMAIL_SMTP_PASSWORD: ${{ secrets.EMAIL_SMTP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+        run: npm start -- --run-now
+
+      - name: Upload digest reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ github.run_number }}
+          path: output/digests/
+          retention-days: 7
+
+      - name: Upload execution logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ github.run_number }}
+          path: logs/
+          retention-days: 7
+
+      - name: Commit and push digest (optional)
+        if: success()
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/digests/
+          git diff --quiet && git diff --staged --quiet || (
+            git commit -m "chore: add daily digest for $(date +%Y-%m-%d)"
+            git push
+          )
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

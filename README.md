@@ -100,7 +100,92 @@ AI-News/
 - **RSS 解析**: rss-parser
 - **AI 摘要**: @google/generative-ai (Gemini 3.0 Flash)
 - **GitHub API**: @octokit/rest
+- **郵件推送**: nodemailer
+- **Markdown 轉換**: marked
 - **測試**: Vitest
+
+## 系統架構
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        AI News Assistant                         │
+└─────────────────────────────────────────────────────────────────┘
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        ▼                      ▼                      ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│ Collectors   │      │  Filters     │      │ Generators   │
+│              │      │              │      │              │
+│ • RSS Feed   │──────▶│ • Dedup     │──────▶│ • Markdown   │
+│ • GitHub API │      │ • Relevance │      │ • Email HTML │
+└──────────────┘      └──────────────┘      └──────────────┘
+        │                      │                      │
+        ▼                      ▼                      ▼
+┌──────────────────────────────────────────────────────────┐
+│                    Summarizers                            │
+│              (Google Gemini API)                          │
+│  • 批次處理 • 快取機制 • 繁體中文摘要                        │
+└──────────────────────────────────────────────────────────┘
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        ▼                      ▼                      ▼
+┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+│ Output       │      │  Data Store  │      │ Push (選填)   │
+│ • Markdown   │      │  • JSON      │      │  • Email     │
+│ • Digest     │      │  • Dedup Idx │      │              │
+└──────────────┘      └──────────────┘      └──────────────┘
+```
+
+### 資料流程
+
+1. **蒐集階段**: 從三層級來源（RSS/API）並發蒐集資訊
+2. **去重階段**: 使用標題相似度 + 內容指紋去除重複項目
+3. **過濾階段**: AI 語義判斷內容相關性（AI/Coding 主題）
+4. **摘要階段**: Gemini API 批次生成繁體中文摘要（3-5 點）
+5. **產生階段**: 生成 Markdown 格式報告
+6. **推送階段** (選填): 透過電子郵件傳送報告
+
+### 核心功能
+
+#### 🎯 智能過濾
+
+- **標題去重**: Levenshtein + Cosine 混合相似度演算法
+- **內容去重**: MD5 + SimHash 雙重指紋比對
+- **相關性判斷**: AI 主題語義識別（50% 信心度門檻）
+
+#### ⚡ 效能優化
+
+- **並發控制**: 最多 5 個來源並發蒐集
+- **批次處理**: 5 則為一批次，批次間延遲 1-4 秒
+- **快取機制**: URL Hash 快取（24 小時 TTL）
+- **執行時間**: < 5 分鐘完成（符合 SC-001）
+
+#### 📊 可觀測性
+
+- **結構化日誌**: JSON 格式，包含執行摘要與錯誤追蹤
+- **敏感資訊遮蔽**: API 金鑰顯示前 4 碼 + \*\*\* + 後 4 碼
+- **執行統計**: 來源成功率、去重率、過濾率等指標
+
+## 進階功能
+
+### 電子郵件推送
+
+設定 `.env` 檔案中的郵件配置：
+
+```bash
+EMAIL_SMTP_HOST=smtp.gmail.com
+EMAIL_SMTP_PORT=587
+EMAIL_SMTP_USER=your_email@gmail.com
+EMAIL_SMTP_PASSWORD=your_app_password_here
+EMAIL_TO=recipient@example.com
+EMAIL_FROM=AI News Assistant <your_email@gmail.com>
+```
+
+系統會自動將報告轉換為 HTML 格式並傳送至指定信箱。
+
+### 定時排程（未來功能）
+
+未來將支援透過系統排程（cron）或 GitHub Actions 定時執行。
 
 ## 授權
 
@@ -108,4 +193,4 @@ MIT License
 
 ## 貢獻
 
-歡迎提交 Issue 或 Pull Request！
+歡迎提交 Issue 或 Pull Request！詳見 [CONTRIBUTING.md](CONTRIBUTING.md)。

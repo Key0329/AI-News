@@ -37,6 +37,96 @@
       }
     },
     {
+      "name": "DeepMind Blog",
+      "tier": 1,
+      "type": "rss",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "Meta AI Blog",
+      "tier": 1,
+      "type": "rss",
+      "url": "https://ai.meta.com/blog/rss/",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "Mistral AI Blog",
+      "tier": 1,
+      "type": "rss",
+      "url": "https://mistral.ai/news/rss/",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "Cursor Blog",
+      "tier": 2,
+      "type": "rss",
+      "url": "https://cursor.sh/blog/rss.xml",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "GitHub Changelog",
+      "tier": 2,
+      "type": "rss",
+      "url": "https://github.blog/changelog/feed/",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "Codeium Blog",
+      "tier": 2,
+      "type": "rss",
+      "url": "https://codeium.com/blog/rss.xml",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
       "name": "VS Code Releases",
       "tier": 2,
       "type": "api",
@@ -53,6 +143,136 @@
       "capabilities": {
         "provides_votes": false,
         "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "Zed Releases",
+      "tier": 2,
+      "type": "api",
+      "url": "https://api.github.com/repos/zed-industries/zed/releases",
+      "auth_required": true,
+      "auth_env_var": "GITHUB_TOKEN",
+      "enabled": true,
+      "max_items": 5,
+      "timeout_ms": 30000,
+      "api_params": {
+        "endpoint": "/repos/zed-industries/zed/releases",
+        "method": "GET"
+      },
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "Vercel AI SDK",
+      "tier": 3,
+      "type": "api",
+      "url": "https://api.github.com/repos/vercel/ai/releases",
+      "auth_required": true,
+      "auth_env_var": "GITHUB_TOKEN",
+      "enabled": true,
+      "max_items": 5,
+      "timeout_ms": 30000,
+      "api_params": {
+        "endpoint": "/repos/vercel/ai/releases",
+        "method": "GET"
+      },
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "MCP Servers",
+      "tier": 3,
+      "type": "api",
+      "url": "https://api.github.com/repos/modelcontextprotocol/servers/releases",
+      "auth_required": true,
+      "auth_env_var": "GITHUB_TOKEN",
+      "enabled": true,
+      "max_items": 5,
+      "timeout_ms": 30000,
+      "api_params": {
+        "endpoint": "/repos/modelcontextprotocol/servers/releases",
+        "method": "GET"
+      },
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "LangChain.js",
+      "tier": 3,
+      "type": "api",
+      "url": "https://api.github.com/repos/langchain-ai/langchainjs/releases",
+      "auth_required": true,
+      "auth_env_var": "GITHUB_TOKEN",
+      "enabled": true,
+      "max_items": 5,
+      "timeout_ms": 30000,
+      "api_params": {
+        "endpoint": "/repos/langchain-ai/langchainjs/releases",
+        "method": "GET"
+      },
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "LlamaIndex.ts",
+      "tier": 3,
+      "type": "api",
+      "url": "https://api.github.com/repos/run-llama/LlamaIndexTS/releases",
+      "auth_required": true,
+      "auth_env_var": "GITHUB_TOKEN",
+      "enabled": true,
+      "max_items": 5,
+      "timeout_ms": 30000,
+      "api_params": {
+        "endpoint": "/repos/run-llama/LlamaIndexTS/releases",
+        "method": "GET"
+      },
+      "capabilities": {
+        "provides_votes": false,
+        "provides_comments": false,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "Hacker News - AI",
+      "tier": 3,
+      "type": "rss",
+      "url": "https://hnrss.org/newest?q=AI+OR+artificial+intelligence+OR+machine+learning",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": true,
+        "provides_comments": true,
+        "provides_pubdate": true
+      }
+    },
+    {
+      "name": "Reddit - LocalLLaMA",
+      "tier": 3,
+      "type": "rss",
+      "url": "https://www.reddit.com/r/LocalLLaMA/.rss",
+      "auth_required": false,
+      "enabled": true,
+      "max_items": 20,
+      "timeout_ms": 30000,
+      "capabilities": {
+        "provides_votes": true,
+        "provides_comments": true,
         "provides_pubdate": true
       }
     }

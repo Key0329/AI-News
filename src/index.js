@@ -41,6 +41,9 @@ import logger, {
 import collectorOrchestrator from "./collectors/collector-orchestrator.js";
 import geminiSummarizer from "./summarizers/gemini-summarizer.js";
 import markdownGenerator from "./generators/markdown-generator.js";
+import { deduplicate, updateDedupIndex } from "./filters/deduplicator.js";
+import { filterRelevant } from "./filters/relevance-filter.js";
+import { createEmailPusher } from "./push/email-pusher.js";
 
 // ES6 模組中的 __dirname 替代方案
 const __filename = fileURLToPath(import.meta.url);
@@ -226,6 +229,33 @@ const main = async () => {
       `蒐集完成: 成功 ${collectionResult.summary.success_count}/${collectionResult.summary.total_sources} 個來源，共 ${collectionResult.items.length} 則資訊`
     );
 
+    // 計算各層級的來源統計（T060）
+    const tierStats = [1, 2, 3].map((tier) => {
+      const tierSources = collectionResult.sourceStats.filter(
+        (s) => s.tier === tier
+      );
+      const successCount = tierSources.filter(
+        (s) => s.status === "success"
+      ).length;
+      const failureCount = tierSources.filter(
+        (s) => s.status === "failure"
+      ).length;
+      return {
+        tier,
+        total: tierSources.length,
+        success: successCount,
+        failure: failureCount,
+        success_rate:
+          tierSources.length > 0
+            ? ((successCount / tierSources.length) * 100).toFixed(2) + "%"
+            : "N/A",
+      };
+    });
+
+    // 記錄層級統計
+    executionLog.sources_by_tier = tierStats;
+    logger.info("各層級來源統計:", tierStats);
+
     // 檢查是否有足夠的資訊
     if (collectionResult.items.length === 0) {
       logger.warn("⚠️  未蒐集到任何資訊，結束執行");
@@ -239,15 +269,63 @@ const main = async () => {
       );
     }
 
-    // ===== 階段 7: 去重處理 =====
-    // TODO: Phase 5 (User Story 2) - 去重功能尚未實作
-    logger.info("去重處理: 尚未實作，跳過");
-    const dedupedItems = collectionResult.items;
+    // ===== 階段 7: 去重處理 (T053) =====
+    logger.info("開始去重處理...");
+    const dedupStartTime = Date.now();
 
-    // ===== 階段 8: 過濾內容 =====
-    // TODO: Phase 5 (User Story 2) - 過濾功能尚未實作
-    logger.info("內容過濾: 尚未實作，跳過");
-    const filteredItems = dedupedItems;
+    const dedupResult = await deduplicate(collectionResult.items, {
+      titleThreshold: 0.8,
+      contentThreshold: 0.8,
+      hammingThreshold: 3,
+    });
+
+    const dedupDuration = Date.now() - dedupStartTime;
+    logger.info(
+      `去重完成: 保留 ${dedupResult.uniqueItems.length} 個項目，` +
+        `移除 ${dedupResult.duplicates.length} 個重複項 (耗時 ${dedupDuration}ms)`
+    );
+
+    // 更新去重索引
+    const dedupIndexPath = path.join(DATA_DIR, "dedup-index.json");
+    await updateDedupIndex(dedupResult.uniqueItems, dedupIndexPath);
+
+    // 更新執行日誌
+    executionLog.deduplication = {
+      status: "completed",
+      items_before: collectionResult.items.length,
+      items_after: dedupResult.uniqueItems.length,
+      duplicates_removed: dedupResult.duplicates.length,
+      duration_ms: dedupDuration,
+      stats: dedupResult.stats,
+    };
+
+    // ===== 階段 8: 相關性過濾 (T054) =====
+    logger.info("開始相關性過濾...");
+    const filterStartTime = Date.now();
+
+    const filterResult = await filterRelevant(dedupResult.uniqueItems, {
+      minConfidence: 50,
+      checkTitle: true,
+      checkContent: true,
+    });
+
+    const filterDuration = Date.now() - filterStartTime;
+    logger.info(
+      `過濾完成: 保留 ${filterResult.relevantItems.length} 個相關項目，` +
+        `過濾 ${filterResult.filteredOut.length} 個不相關項目 (耗時 ${filterDuration}ms)`
+    );
+
+    // 更新執行日誌
+    executionLog.filtering = {
+      status: "completed",
+      items_before: dedupResult.uniqueItems.length,
+      items_after: filterResult.relevantItems.length,
+      filtered_out: filterResult.filteredOut.length,
+      duration_ms: filterDuration,
+      stats: filterResult.stats,
+    };
+
+    const filteredItems = filterResult.relevantItems;
 
     // ===== 階段 9: 摘要生成 (T024-T028) =====
     logger.info("開始生成摘要...");
@@ -276,6 +354,8 @@ const main = async () => {
     const reportData = {
       items: itemsWithSummary,
       collectionStats: collectionResult.summary,
+      dedupStats: executionLog.deduplication,
+      filterStats: executionLog.filtering,
       summarizationStats: executionLog.summarization,
       executionSummary: {
         total_duration_ms: Date.now() - startTime,
@@ -303,9 +383,64 @@ const main = async () => {
     );
     executionLog.report.generated_at = new Date().toISOString();
 
-    // ===== 階段 11: 推送報告（選填）=====
-    // TODO: Phase 7 (User Story 4) - 推送功能尚未實作
-    logger.info("報告推送: 尚未實作，跳過");
+    // ===== 階段 11: 推送報告（選填 - User Story 4）=====
+    // T067 [US4] 整合推送流程（報告產生後 → 推送 → 記錄推送狀態到執行日誌）
+    let pushResult = null;
+
+    try {
+      // 檢查是否設定了電子郵件推送環境變數
+      const emailEnabled =
+        process.env.EMAIL_SMTP_HOST &&
+        process.env.EMAIL_SMTP_USER &&
+        process.env.EMAIL_TO;
+
+      if (emailEnabled) {
+        logger.info("開始推送報告至電子郵件...");
+
+        const emailPusher = createEmailPusher({
+          host: process.env.EMAIL_SMTP_HOST,
+          port: process.env.EMAIL_SMTP_PORT,
+          user: process.env.EMAIL_SMTP_USER,
+          password: process.env.EMAIL_SMTP_PASSWORD,
+          from: process.env.EMAIL_FROM,
+          to: process.env.EMAIL_TO,
+        });
+
+        // 推送報告並處理重試邏輯
+        pushResult = await emailPusher.pushWithRetry(reportPath, reportDate);
+
+        // 記錄推送結果到執行日誌
+        executionLog.push = {
+          status: pushResult.status,
+          success: pushResult.success,
+          attempts: pushResult.attempts,
+          message_id: pushResult.messageId,
+          error: pushResult.error || null,
+          next_retry_at: pushResult.nextRetryAt || null,
+          timestamp: new Date().toISOString(),
+        };
+
+        if (pushResult.success) {
+          logger.info(`✅ 報告推送成功: ${process.env.EMAIL_TO}`);
+        } else if (pushResult.status === "pending_retry") {
+          logger.warn(`⚠️  報告推送失敗，已標記為待重試: ${pushResult.error}`);
+        } else if (pushResult.status === "abandoned") {
+          logger.error(`❌ 報告推送失敗，已放棄: ${pushResult.error}`);
+        }
+      } else {
+        logger.info("報告推送: 未設定電子郵件配置，跳過");
+        executionLog.push = {
+          status: "skipped",
+          reason: "Email configuration not set",
+        };
+      }
+    } catch (pushError) {
+      logger.error("推送報告時發生錯誤", { error: pushError.message });
+      executionLog.push = {
+        status: "error",
+        error: pushError.message,
+      };
+    }
 
     // ===== 完成: 結束執行日誌並寫入檔案 (T034-T036) =====
     executionLog.summary.total_items_collected = collectionResult.items.length;
