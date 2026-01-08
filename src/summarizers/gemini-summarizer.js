@@ -32,7 +32,7 @@ const CACHE_FILE = path.join(ROOT_DIR, "data", "summary-cache.json");
 class GeminiSummarizer {
   constructor() {
     this.ai = null;
-    this.modelName = "gemini-2.5-flash";
+    this.modelName = "gemini-2.5-flash-lite";
     this.cache = new Map(); // { urlHash: { summary: Array, timestamp: number } }
     this.cacheLoaded = false;
     this.batchSize = 5; // 批次大小
@@ -47,9 +47,9 @@ class GeminiSummarizer {
    * 初始化 Gemini API
    *
    * @param {string} apiKey - Gemini API Key
-   * @param {string} modelName - 模型名稱（預設 gemini-2.5-flash）
+   * @param {string} modelName - 模型名稱（預設 gemini-2.5-flash-lite）
    */
-  async initialize(apiKey, modelName = "gemini-2.5-flash") {
+  async initialize(apiKey, modelName = "gemini-2.5-flash-lite") {
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY is required");
     }
