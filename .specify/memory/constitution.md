@@ -1,13 +1,13 @@
 <!--
 Sync Impact Report:
-Version: 0.0.0 → 1.0.0 (initial ratification)
-Modified Principles: N/A (initial creation)
-Added Sections: All core principles and governance structure
+Version: 1.0.0 → 1.1.0 (Minor: Added Brownfield Project Constraints)
+Modified Principles: N/A
+Added Sections: VI. 棕地專案限制
 Removed Sections: N/A
 Templates Status:
-  ✅ .specify/templates/plan-template.md - Reviewed, compatible with new constitution
-  ✅ .specify/templates/spec-template.md - Reviewed, aligns with testability and MVP principles
-  ✅ .specify/templates/tasks-template.md - Reviewed, supports independent testing approach
+  ✅ .specify/templates/plan-template.md - Reviewed, compatible (Constitution Check covers new constraints)
+  ✅ .specify/templates/spec-template.md - Reviewed, compatible
+  ✅ .specify/templates/tasks-template.md - Reviewed, compatible
 Follow-up TODOs: None
 -->
 
@@ -79,6 +79,17 @@ Follow-up TODOs: None
 
 **理由**: 持續交付降低整合風險，加快問題發現，提高團隊協作效率。
 
+### VI. 棕地專案限制（嚴格執行）
+
+**原則**: 維護系統穩定性，最小化變更風險，絕對尊重現狀。
+
+**規則**:
+- **不可重構現有程式碼**: 嚴格禁止對現有程式碼進行任何形式的重構，除非該程式碼直接導致新功能無法運作。
+- **沒提到的功能絕對不要動**: 嚴格限制變更範圍，僅修改規格書中明確指定的部分，禁止「順手修復」或「優化」周邊代碼。
+- **遵守現有的程式命名與設計規範**: 必須模仿現有的命名慣例、目錄結構和設計模式，即使它們違背了現代最佳實踐或一般規範。
+
+**理由**: 棕地專案中，穩定性高於一切。任何未經授權的變更都可能引入未知的副作用（Regression），破壞現有功能。
+
 ## 語言規範
 
 **原則**: 所有文件、註解、提交訊息必須使用正體中文。
@@ -99,24 +110,28 @@ Follow-up TODOs: None
 1. 功能需求必須明確記錄在 spec.md
 2. 使用者故事必須可獨立測試
 3. 驗收標準必須清晰可衡量
+4. **憲法檢查**: 確認計畫是否違反「棕地專案限制」
 
 ### 設計階段
 
 1. 資料模型必須記錄在 data-model.md
 2. API 契約必須記錄在 contracts/
 3. 設計必須支援獨立測試
+4. 設計必須沿用現有架構模式
 
 ### 實作階段
 
 1. 遵循任務清單順序（tasks.md）
 2. 每個使用者故事獨立實作和測試
 3. 完成一個使用者故事後才開始下一個
+4. 實作時嚴格遵守現有程式碼風格
 
 ### 驗證階段
 
 1. 每個使用者故事完成後獨立驗證
 2. 通過驗收標準檢查
 3. 程式碼審查通過才能合併
+4. 驗證未觸及無關功能
 
 ## 治理規範
 
@@ -151,4 +166,4 @@ Follow-up TODOs: None
 3. 說明為何更簡單的方案不可行
 4. 取得團隊共識
 
-**版本**: 1.0.0 | **批准日期**: 2026-01-05 | **最後修訂**: 2026-01-05
+**版本**: 1.1.0 | **批准日期**: 2026-01-05 | **最後修訂**: 2026-01-08
